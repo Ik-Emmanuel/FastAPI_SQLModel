@@ -10,11 +10,7 @@ working with SQLModel with FastAPI which combines pydantic and SQLAlchemy into o
 
 ## Steps 
 - create your models (models.py)
-    -- from sqlmodel import SQLModel, Field
-        class Item(SQLModel, table=True):
-            id: Optional[int] = Field(default=None, primary_key=True)
-            title:str
-            description:str
+   using SQLModel and Fields: from sqlmodel import SQLModel, Field
 
 
 - create database engine (database.py)
@@ -31,3 +27,35 @@ working with SQLModel with FastAPI which combines pydantic and SQLAlchemy into o
 
     SQLModel.metadata.create_all(engine) //This creates the tables 
     // make sure the 3 imports are complete
+
+
+## Crud Operations 
+
+- Read ALL
+    statement = select(Item)  
+    result =  session.exec(statement).all()  
+
+- Read One  
+    statement = select(Item).where(Item.id == item_id)  
+    result = session.exec(statement).first()  #or .one_or_none() or .one()  
+
+- Create  
+    new_item = Item(title=item.title, description=item.description)  
+    session.add(new_item)  
+    session.commit()  
+
+- Update
+    statement = select(Item).where(Item.id == item_id)  
+    result = session.exec(statement).first()  
+    result.title = item.title  
+    result.description = item.description  
+    session.commit()  
+
+
+- Delete  
+    statement= select(Item).where(Item.id == item_id)  
+    result = session.exec(statement).one_or_none()  
+    if not result:  
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="The specified resource was not found")  
+    session.delete(result)  
+
